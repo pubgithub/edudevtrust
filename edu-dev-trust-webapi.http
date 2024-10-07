@@ -1,0 +1,6 @@
+@edu_dev_trust_webapi_HostAddress = http://localhost:5206
+
+GET {{edu_dev_trust_webapi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
