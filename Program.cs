@@ -1,11 +1,19 @@
 using Microsoft.EntityFrameworkCore;
+using BookLibraryApi;
 using BookLibraryApi.Models;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.ModelBuilder;
+using Microsoft.AspNetCore.OData.Query;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<BookContext>(options =>
     options.UseInMemoryDatabase("BookLibrary"));
+
+builder.Services.AddControllers().AddOData(opt =>
+    opt.AddRouteComponents("odata", OdataConfig.GetEdmModel()).Select().Filter().OrderBy());
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,6 +41,23 @@ app.MapGet("/books/{id}", async (int id, BookContext db) =>
     await db.Books.FindAsync(id) is Book book
         ? Results.Ok(book)
         : Results.NotFound());
+
+app.MapGet("/odata/books/search", [EnableQuery] (string? title, string? author, BookContext db) =>
+{
+    var books = db.Books.AsQueryable();
+
+    if (!string.IsNullOrEmpty(title))
+    {
+        books = books.Where(b => b.Title.Contains(title));
+    }
+
+    if (!string.IsNullOrEmpty(author))
+    {
+        books = books.Where(predicate: b => b.Author.Contains(author));
+    }
+
+    return books;
+});
 
 app.MapPost("/books", async (Book book, BookContext db) =>
 {
