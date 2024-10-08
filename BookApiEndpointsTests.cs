@@ -27,7 +27,7 @@ public class BookApiEndpointsTests
 
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton(mockService.Object);
-        builder.Services.AddControllers(); // Add this line if you have controllers
+        builder.Services.AddControllers(); 
 
         var app = builder.Build();
 
@@ -42,7 +42,7 @@ public class BookApiEndpointsTests
             .ConfigureServices(services =>
             {
                 services.AddSingleton(mockService.Object);
-                services.AddControllers(); // Add this line if you have controllers
+                services.AddControllers(); 
             })
             .Configure(app =>
             {
